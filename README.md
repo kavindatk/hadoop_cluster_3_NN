@@ -122,6 +122,14 @@ export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 source  ~/.bashrc #Update system
 ```
 
-Now that we have successfully installed <b>Java 11 on all 5 servers</b>, I’ve also gone ahead and added the <b>basic Hadoop enviroment variables</b> to all the servers at the same time to make things easier.
+Now that we have successfully installed <b>Java 11 on all 5 servers</b>, I’ve also gone ahead and added the <b>basic Hadoop environment variables</b> to all the servers at the same time to make things easier.
 In the next step, I’ll show you how to set up <b>passwordless SSH login</b> between all 5 servers so they can communicate with each other.
 After that, we’ll install and configure <b>ZooKeeper on 3 of the nodes</b>. Once ZooKeeper is ready, we’ll move on to the <b>full Hadoop configuration and setup</b>.
+
+
+## Step 4: Install and Configure ZooKeeper
+
+In this step, I will show you how to install ZooKeeper on 3 of the 5 nodes.
+As part of the setup, we will also add environment variables related to ZooKeeper, so the system can access it easily.
+The following steps will guide you through the installation and configuration of ZooKeeper on the selected nodes.
+
