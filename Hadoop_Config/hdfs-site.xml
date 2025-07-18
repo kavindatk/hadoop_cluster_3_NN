@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+    <!-- NameService Configuration -->
+    <property>
+        <name>dfs.nameservices</name>
+        <value>hadoop-cluster</value>
+    </property>
+    
+    <!-- NameNode IDs -->
+    <property>
+        <name>dfs.ha.namenodes.hadoop-cluster</name>
+        <value>nn1,nn2,nn3</value>
+    </property>
+    
+    <!-- NameNode RPC addresses -->
+    <property>
+        <name>dfs.namenode.rpc-address.hadoop-cluster.nn1</name>
+        <value>mst01:9000</value>
+    </property>
+    <property>
+        <name>dfs.namenode.rpc-address.hadoop-cluster.nn2</name>
+        <value>mst02:9000</value>
+    </property>
+     <property>
+        <name>dfs.namenode.rpc-address.hadoop-cluster.nn3</name>
+        <value>mst03:9000</value>
+    </property>
+
+
+    <!-- NameNode HTTP addresses -->
+    <property>
+        <name>dfs.namenode.http-address.hadoop-cluster.nn1</name>
+        <value>mst01:9870</value>
+    </property>
+    <property>
+        <name>dfs.namenode.http-address.hadoop-cluster.nn2</name>
+        <value>mst02:9870</value>
+    </property>
+    <property>
+        <name>dfs.namenode.http-address.hadoop-cluster.nn3</name>
+        <value>mst03:9870</value>
+    </property>
+
+    <!-- Shared storage for NameNode metadata -->
+    <property>
+        <name>dfs.namenode.shared.edits.dir</name>
+        <value>qjournal://mst01:8485;mst02:8485;mst03:8485/hadoop-cluster</value>
+    </property>
+    
+    <!-- JournalNode data directory -->
+    <property>
+        <name>dfs.journalnode.edits.dir</name>
+        <value>/opt/hadoop/journal</value>
+    </property>
+    
+    <!-- Client failover -->
+    <property>
+        <name>dfs.client.failover.proxy.provider.hadoop-cluster</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+    
+    <!-- Fencing method -->
+    <property>
+        <name>dfs.ha.fencing.methods</name>
+        <value>sshfence</value>
+    </property>
+    <property>
+        <name>dfs.ha.fencing.ssh.private-key-files</name>
+        <value>/home/hadoop/.ssh/id_rsa</value>
+    </property>
+    
+    <!-- Auto-failover -->
+    <property>
+        <name>dfs.ha.automatic-failover.enabled</name>
+        <value>true</value>
+    </property>
+    
+    <!-- Replication factor -->
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+    
+    <!-- Block size -->
+    <property>
+        <name>dfs.blocksize</name>
+        <value>268435456</value>
+    </property>
+    
+    <!-- Data directories -->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>/opt/hadoop/hdfs/datanode</value>
+    </property>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>/opt/hadoop/hdfs/namenode</value>
+    </property>
+    
+    <!-- Secondary NameNode -->
+    <property>
+        <name>dfs.namenode.secondary.http-address</name>
+        <value>mst02:9868</value>
+    </property>
+
+</configuration>
