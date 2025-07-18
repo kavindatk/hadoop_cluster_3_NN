@@ -430,11 +430,11 @@ cd /opt/hadoop/etc/hadoop/
    
     <property>
         <name>mapreduce.jobhistory.address</name>
-        <value>bigdataproxy:10020</value>
+        <value>0.0.0.0:10020</value>
     </property>
     <property>
         <name>mapreduce.jobhistory.webapp.address</name>
-        <value>bigdataproxy:19888</value>
+        <value>0.0.0.0:19888</value>
     </property>
 
     <!-- Memory Configuration -->
@@ -532,11 +532,11 @@ cd /opt/hadoop/etc/hadoop/
     </property>
     <property>
         <name>yarn.timeline-service.hostname</name>
-        <value>bigdataproxy</value>
+        <value>0.0.0.0</value>
     </property>
     <property>
         <name>yarn.timeline-service.webapp.address</name>
-        <value>bigdataproxy:8188</value>
+        <value>0.0.0.0:8188</value>
     </property>
     <property>
         <name>yarn.resourcemanager.system-metrics-publisher.enabled</name>
@@ -655,6 +655,12 @@ stop-all.sh # For refresh (Optional)
 start-all.sh
 ```
 
+From All master start JobHistoryServer & ApplicationHistoryServer (Timeline Service)
+
+```bash
+yarn --daemon start timelineserver 
+mapred --daemon start historyserver  
+```
 
 ##### 4. Verify the cluster status
 
