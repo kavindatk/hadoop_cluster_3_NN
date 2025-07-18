@@ -558,3 +558,138 @@ mst01
 mst02
 mst03
 ```
+
+##### 7.Hadoop Environment (hadoop-env.sh)
+
+```xml
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+export HADOOP_LOG_DIR=/opt/hadoop/logs
+```
+
+##### 8. Directory Creation
+```bash
+sudo mkdir -p /opt/hadoop/tmp
+sudo mkdir -p /opt/hadoop/hdfs/namenode
+sudo mkdir -p /opt/hadoop/hdfs/datanode
+sudo mkdir -p /opt/hadoop/journal
+sudo mkdir -p /opt/hadoop/logs
+sudo chown -R hadoop:hadoop /opt/hadoop/
+```
+
+<br/>
+
+## Step 6: Format the Cluster and Start Hadoop Services
+
+So far, we’ve completed the necessary XML configuration for a <b>3-master Hadoop cluster</b>.
+You may have noticed that in some of the configuration files, I’ve used the hostname ``` bigdataproxy ```.
+
+This is because I’m planning to use <b>HAProxy</b> for load balancing the <b>Timeline Service and Job History Server</b>.
+Hadoop does not have a built-in load balancer for these components, so HAProxy will act as a workaround.
+(I will explain how to set up HAProxy in a later step.)
+
+For now, I’ve included ``` bigdataproxy ``` in the configuration, since it’s required for proper service routing.
+
+The steps below will show you how to:
+
+    1. Distribute files across the Hadoop cluster
+    2. Format the Hadoop cluster
+    3. Start the required services
+    4. Verify the cluster status
+
+##### 1. Distribute files across the Hadoop cluster
+
+From mst01, copy configuration to all other nodes:
+
+```bash
+for node in mst02 mst03 slv01 slv02; do
+    scp -r /opt/hadoop hadoop@$node:/opt/
+done
+```
+
+##### 2. Format the Hadoop cluster
+
+On mst01
+
+```bash
+hdfs zkfc -formatZK
+hadoop-daemon.sh start journalnode
+hadoop-daemon.sh start journalnode
+```
+
+On mst02 and mst03
+
+```bash
+hadoop-daemon.sh start journalnode
+```
+After that , again in mst01
+
+On mst01
+
+```bash
+hdfs namenode -format 
+hdfs --daemon start namenode
+```
+
+On mst02 and mst03
+
+```bash
+hdfs namenode -bootstrapStandby 
+hdfs --daemon start namenode
+```
+
+##### 3. Start the required services
+
+From mst01 , start the hadoop 
+
+```bash
+start-all.sh
+
+stop-all.sh # For refresh (Optional)
+
+start-all.sh
+```
+
+
+##### 4. Verify the cluster status
+
+
+###### 1. Check HDFS Status
+```bash
+jps
+
+hdfs dfsadmin -report
+hdfs haadmin -getServiceState nn1
+hdfs haadmin -getServiceState nn2
+hdfs haadmin -getServiceState nn3
+```
+
+###### 2. Check YARN Status
+```bash
+yarn node -list
+yarn application -list
+```
+
+###### 3. Web Interfaces
+- NameNode (Active): http://mst01:9870
+- NameNode (Standby): http://mst03:9870
+- Secondary NameNode: http://mst02:9868
+- ResourceManager: http://mst01:8088
+- JobHistory Server: http://mst02:19888
+
+###### 4. Test HDFS Operations
+```bash
+hdfs dfs -mkdir /test
+hdfs dfs -put /etc/passwd /test/
+hdfs dfs -ls /test
+hdfs dfs -cat /test/passwd
+```
+
+###### 5. Test MapReduce
+```bash
+yarn jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.0.jar pi 2 10
+```
+
+<picture>
+  <img alt="docker" src="https://github.com/kavindatk/hadoop_cluster_3_NN/blob/main/images/verify_hadoop.JPG" width="800" height="400">
+</picture>
