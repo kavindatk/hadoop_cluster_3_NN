@@ -100,4 +100,10 @@
         <value>true</value>
     </property>
 
+    <!-- Zookeeper Service -->	
+<property>
+  <name>hadoop.zk.address</name>
+  <value>mst01:2181,mst02:2181,mst03:2181</value>
+</property>
+
 </configuration>
