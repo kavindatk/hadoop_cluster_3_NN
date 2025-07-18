@@ -126,10 +126,148 @@ Now that we have successfully installed <b>Java 11 on all 5 servers</b>, I’ve 
 In the next step, I’ll show you how to set up <b>passwordless SSH login</b> between all 5 servers so they can communicate with each other.
 After that, we’ll install and configure <b>ZooKeeper on 3 of the nodes</b>. Once ZooKeeper is ready, we’ll move on to the <b>full Hadoop configuration and setup</b>.
 
+## Step 4: Set Up Passwordless SSH Login
 
-## Step 4: Install and Configure ZooKeeper
+In this step, I will show you how to <b>set up passwordless SSH login</b> between all servers.
+
+This step is <b>mandatory</b>, as passwordless login is required for Hadoop nodes to communicate with each other during cluster operations.
+
+```bash
+# Configure SSH daemon:
+ssh-keygen -A  
+sudo sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config 
+sudo sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+```
+
+```bash
+# Add 'hadoop' to the 'wheel' group to allow sudo access 
+sudo su 
+useradd -m -s /bin/bash hadoop 
+echo "hadoop:hadoop" | chpasswd 
+usermod -aG sudo hadoop
+```
+
+```bash
+# Generate SSH keys for 'hadoop' user
+mkdir -p /home/hadoop/.ssh 
+ssh-keygen -t rsa -b 4096 -f /home/hadoop/.ssh/id_rsa -N "" 
+cp /home/hadoop/.ssh/id_rsa.pub /home/hadoop/.ssh/authorized_keys 
+chmod 700 /home/hadoop/.ssh 
+chmod 600 /home/hadoop/.ssh/authorized_keys 
+chown -R hadoop:hadoop /home/hadoop/.ssh
+```
+
+```bash
+# Copy public key to others
+ssh-copy-id hadoop@<other-server-ip>
+```
+
+## Step 5: Install and Configure ZooKeeper
 
 In this step, I will show you how to install ZooKeeper on 3 of the 5 nodes.
 As part of the setup, we will also add environment variables related to ZooKeeper, so the system can access it easily.
 The following steps will guide you through the installation and configuration of ZooKeeper on the selected nodes.
+
+<br/>
+
+### Set ZooKeeper Environment Variables
+
+Before we proceed with the full configuration, we need to <b>set some required environment variables for ZooKeeper</b>.
+
+These variables will help the system locate and run ZooKeeper properly.
+I’ll add the following environment variables on <b>all 3 master nodes</b>, since we are using a 3-node ZooKeeper setup.
+
+```bash
+sudo nano ~/.bashrc
+```
+
+```bash
+#Zookeeper Related Options
+export ZOOKEEPER_HOME=/opt/zookeeper
+export PATH=$PATH:$ZOOKEEPER_HOME/bin
+```
+
+```bash
+source  ~/.bashrc #Update system
+```
+<br/>
+
+### Set ZooKeeper Environment Variables
+
+In this stage, we will add the necessary configuration files for ZooKeeper and then start the ZooKeeper service on all 3 nodes.
+
+The following steps show how to complete the configuration and start the service.
+
+```bash
+# Create data directory
+sudo mkdir -p /opt/zookeeper/data
+sudo mkdir -p /opt/zookeeper/logs
+sudo chown -R hadoop:hadoop /opt/zookeeper/data
+sudo chown -R hadoop:hadoop /opt/zookeeper/logs
+```
+
+```bash
+cd /opt/zookeeper/conf/
+cp zoo_sample.cfg zoo.cfg
+nano zoo.cfg
+````
+
+```bash
+#Add or modifiy following
+dataDir=/opt/zookeeper/data
+dataLogDir=/opt/zookeeper/logs
+
+
+# Cluster configuration
+server.1=mst01:2888:3888
+server.2=mst02:2888:3888
+server.3=mst03:2888:3888
+
+# Optional settings
+maxClientCnxns=60
+autopurge.snapRetainCount=3
+autopurge.purgeInterval=24
+```
+
+#### Create Server ID Files
+
+###### On Server 1 (zk1):
+
+```bash
+echo "1" | sudo tee /opt/zookeeper/data/myid
+sudo chown hadoop:hadoop /opt/zookeeper/data/myid
+```
+
+###### On Server 2 (zk2):
+
+```bash
+echo "2" | sudo tee /opt/zookeeper/data/myid
+sudo chown hadoop:hadoop /opt/zookeeper/data/myid
+```
+
+###### On Server 3 (zk3):
+
+```bash
+echo "3" | sudo tee /opt/zookeeper/data/myid
+sudo chown hadoop:hadoop /opt/zookeeper/data/myid
+```
+
+
+###### Start ZOOKEEPER service and verify (All Servers)
+
+```bash
+zkServer.sh start
+zkServer.sh status
+```
+
+
+<picture>
+  <img alt="docker" src="https://github.com/kavindatk/hadoop_cluster_3_NN/blob/main/images/zookeeper.JPG" width="800" height="400">
+</picture>
+
+
+If the setup is successful, you will see that <b>one ZooKeeper node is marked as the Leader, while the other two nodes act as Followers.</b>
+
+This confirms that the <b>ZooKeeper quorum is working correctly</b>.
+
 
