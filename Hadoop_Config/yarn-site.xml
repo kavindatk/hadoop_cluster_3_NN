@@ -86,12 +86,12 @@
     </property>
     <property>
         <name>yarn.timeline-service.hostname</name>
-        <value>bigdataproxy</value>
+        <value>0.0.0.0</value>
     </property>
     
     <property>
         <name>yarn.timeline-service.webapp.address</name>
-        <value>bigdataproxy:8188</value>
+        <value>0.0.0.0:8188</value>
     </property>
 
 
