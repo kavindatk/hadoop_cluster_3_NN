@@ -542,6 +542,11 @@ cd /opt/hadoop/etc/hadoop/
         <name>yarn.resourcemanager.system-metrics-publisher.enabled</name>
         <value>true</value>
     </property>
+    <!-- Zookeeper Service -->	
+<property>
+  <name>hadoop.zk.address</name>
+  <value>mst01:2181,mst02:2181,mst03:2181</value>
+</property>
 ```
 
 ##### 5. Workers Configuration (workers)
