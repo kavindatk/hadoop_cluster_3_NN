@@ -14,96 +14,87 @@
 -->
 <configuration>
 
-<!-- Site specific YARN configuration properties -->
-
-    <!-- ResourceManager Configuration -->
-
-	<property>
-	  <name>yarn.resourcemanager.ha.enabled</name>
-	  <value>true</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.cluster-id</name>
-	  <value>yarn-cluster</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.ha.rm-ids</name>
-	  <value>rm1,rm2,rm3</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.hostname.rm1</name>
-	  <value>mst01</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.hostname.rm2</name>
-	  <value>mst02</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.hostname.rm3</name>
-	  <value>mst03</value>
-	</property>
-    
-    <!-- NodeManager Configuration -->
+    <property>
+        <name>yarn.resourcemanager.ha.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.cluster-id</name>
+        <value>hadoop-cluster</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.ha.rm-ids</name>
+        <value>rm1,rm2,rm3</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.hostname.rm1</name>
+        <value>mst01</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.hostname.rm2</name>
+        <value>mst02</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.hostname.rm3</name>
+        <value>mst03</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address.rm1</name>
+        <value>mst01:8032</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address.rm2</name>
+        <value>mst02:8032</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address.rm3</name>
+        <value>mst03:8032</value>
+    </property>
     <property>
         <name>yarn.nodemanager.aux-services</name>
         <value>mapreduce_shuffle</value>
     </property>
     <property>
-        <name>yarn.nodemanager.env-whitelist</name>
-        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+        <name>yarn.resourcemanager.webapp.address.rm1</name>
+        <value>mst01:8088</value>
     </property>
-    
-    <!-- Memory Configuration -->
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm2</name>
+        <value>mst02:8088</value>
+    </property>
+	    <property>
+        <name>yarn.resourcemanager.webapp.address.rm3</name>
+        <value>mst03:8088</value>
+    </property>
+    <property>
+    	<name>yarn.log-aggregation-enable</name>
+    	<value>true</value>
+    </property>
     <property>
         <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>4096</value>
+        <value>6144</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>1024</value>
     </property>
     <property>
         <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>4096</value>
+        <value>6144</value> 
     </property>
-    <property>
-        <name>yarn.app.mapreduce.am.resource.mb</name>
-        <value>1024</value>
-    </property>
-    
-    <!-- CPU Configuration -->
-    <property>
-        <name>yarn.nodemanager.resource.cpu-vcores</name>
-        <value>2</value>
-    </property>
-    
-    <!-- Log Configuration -->
-    <property>
-        <name>yarn.log-aggregation-enable</name>
-        <value>true</value>
-    </property>
-    
-    <!-- Timeline Service -->
-    <property>
-        <name>yarn.timeline-service.enabled</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>yarn.timeline-service.hostname</name>
-        <value>0.0.0.0</value>
-    </property>
-    
-    <property>
-        <name>yarn.timeline-service.webapp.address</name>
-        <value>0.0.0.0:8188</value>
-    </property>
-
-
-    <property>
-        <name>yarn.resourcemanager.system-metrics-publisher.enabled</name>
-        <value>true</value>
-    </property>
+	<property>
+		<name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
+		<value>true</value>
+	</property>
+	<property>
+		<name>yarn.client.failover-proxy-provider</name>
+		<value>org.apache.hadoop.yarn.client.ConfiguredRMFailoverProxyProvider</value>
+	</property>
 
     <!-- Zookeeper Service -->	
-<property>
-  <name>hadoop.zk.address</name>
-  <value>mst01:2181,mst02:2181,mst03:2181</value>
-</property>
+  <property>
+    <name>yarn.resourcemanager.zk-address</name>
+    <value>mst01:2181,mst02:2181,mst03:2181</value>
+  </property>
 
 </configuration>

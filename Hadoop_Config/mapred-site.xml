@@ -22,36 +22,60 @@
         <name>mapreduce.framework.name</name>
         <value>yarn</value>
     </property>
-    
-    <!-- JobHistory Server -->
-   
     <property>
-        <name>mapreduce.jobhistory.address</name>
-        <value>0.0.0.0:10020</value>
+        <name>mapreduce.jobtracker.address</name>
+        <value>localhost:8032</value>
     </property>
     <property>
-        <name>mapreduce.jobhistory.webapp.address</name>
-        <value>0.0.0.0:19888</value>
+   	 <name>mapreduce.jobhistory.done-dir</name>
+   	 <value>/opt/hadoop/hdfs/jobhistory/done</value>
+    </property>
+    <!-- Shuffle Service Configuration -->
+    <property>
+        <name>mapreduce.shuffle.port</name>
+        <value>13562</value>
     </property>
 
-    <!-- Memory Configuration -->
+    <!-- Default Memory Configurations -->
     <property>
         <name>mapreduce.map.memory.mb</name>
-        <value>1024</value>
+        <value>1024</value> <!-- 1 GB -->
     </property>
     <property>
         <name>mapreduce.reduce.memory.mb</name>
-        <value>1024</value>
+        <value>1024</value> <!-- 1 GB -->
     </property>
-    
-    <!-- Java Heap Size -->
     <property>
         <name>mapreduce.map.java.opts</name>
-        <value>-Xmx768m</value>
+        <value>-Xmx1536m</value>
     </property>
     <property>
         <name>mapreduce.reduce.java.opts</name>
-        <value>-Xmx768m</value>
+        <value>-Xmx3072m</value>
+    </property>
+    <property>
+    	<name>mapreduce.jobhistory.intermediate-done-dir</name>
+    	<value>/opt/hadoop/hdfs/jobhistory/intermediate-done</value>
+    </property>
+    <property>
+    	<name>mapreduce.jobhistory.address</name>
+    	<value>0.0.0.0:10020</value>
+    </property>
+    <property>
+  	  <name>mapreduce.jobhistory.webapp.address</name>
+      <value>0.0.0.0:19888</value>
+    </property>
+    <property>
+  		<name>yarn.app.mapreduce.am.env</name>
+  		<value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+    </property>
+    <property>
+  		<name>mapreduce.map.env</name>
+  		<value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+    </property>
+    <property>
+  		<name>mapreduce.reduce.env</name>
+  		<value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
     </property>
 
 </configuration>
