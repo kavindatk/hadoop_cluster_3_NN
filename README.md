@@ -118,6 +118,7 @@ export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin:$JAVA_HOME/bin
 export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
 
+
 ```
 
 ```bash
@@ -296,259 +297,326 @@ cd /opt/hadoop/etc/hadoop/
 ##### 1. Core Configuration (core-site.xml)
 
 ```xml
-    <property>
-        <name>fs.defaultFS</name>
-        <value>hdfs://hadoop-cluster</value>
-    </property>
-    <property>
-        <name>hadoop.tmp.dir</name>
-        <value>/opt/hadoop/tmp</value>
-    </property>
-    <property>
-        <name>ha.zookeeper.quorum</name>
-        <value>mst01:2181,mst02:2181,mst03:2181</value>
-    </property>
+<property>
+	<name>fs.defaultFS</name>
+	<value>hdfs://hadoop-cluster</value>
+</property>
+<property>
+	<name>hadoop.tmp.dir</name>
+	<value>/opt/hadoop/tmp/hadoop-${user.name}</value>
+</property>
+<property>
+	<name>hadoop.proxyuser.hue.hosts</name>
+	<value>*</value> <!-- For futre HUE setup -->
+</property>
+<property>
+	<name>hadoop.proxyuser.hue.groups</name>
+	<value>*</value> <!-- For futre HUE setup -->
+</property>
+<property>
+	<name>hadoop.proxyuser.hadoop.hosts</name>
+	<value>*</value>
+</property>
+<property>
+	<name>hadoop.proxyuser.hadoop.groups</name>
+	<value>*</value>
+</property>
+<property>
+	<name>hadoop.proxyuser.hive.groups</name>
+	<value>*</value>  <!-- For futre Hive setup -->
+</property>
+<property>
+	<name>hadoop.proxyuser.hive.hosts</name>
+	<value>*</value> <!-- For futre Hive setup -->
+</property>
+<property>
+	<name>hadoop.proxyuser.httpfs.groups</name>
+	<value>*</value>
+</property>
+
+<property>
+	<name>hadoop.proxyuser.httpfs.hosts</name>
+	<value>*</value>
+</property>
+<property>
+	<name>ha.zookeeper.quorum</name>
+	<value>mst01:2181,mst02:2181,mst03:2181</value>
+</property>
 ```
 
 
 ##### 2. HDFS Configuration (hdfs-site.xml)
 
 ```xml
+<property>
+	<name>dfs.nameservices</name>
+	<value>hadoop-cluster</value>
+</property>
+<property>
+	<name>dfs.ha.namenodes.hadoop-cluster</name>
+	<value>nn1,nn2,nn3</value>
+</property>
+<property>
+	<name>dfs.namenode.rpc-address.hadoop-cluster.nn1</name>
+	<value>mst01:8020</value>
+</property>
+<property>
+	<name>dfs.namenode.rpc-address.hadoop-cluster.nn2</name>
+	<value>mst02:8020</value>
+</property>
+<property>
+	<name>dfs.namenode.rpc-address.hadoop-cluster.nn3</name>
+	<value>mst03:8020</value>
+</property>
+<property>
+	<name>dfs.namenode.http-address</name>
+	<value>0.0.0.0:9870</value>
+</property>
+<property>
+	<name>dfs.client.failover.proxy.provider.hadoop-cluster</name>
+	<value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+</property>
+<property>
+	<name>dfs.namenode.shared.edits.dir</name>
+	<value>qjournal://mst01:8485;mst02:8485;mst03:8485/hadoop-cluster</value>
+</property>
+<property>
+	<name>dfs.ha.fencing.methods</name>
+	<value>sshfence</value>
+</property>
+<property>
+	<name>dfs.ha.fencing.ssh.private-key-files</name>
+	<value>/home/hadoop/.ssh/id_rsa</value>
+</property>
+<property>
+	<name>dfs.ha.automatic-failover.enabled</name>
+	<value>true</value>
+</property>
+<property>
+	<name>dfs.ha.nn.not-become-active-in-safemode</name>
+	<value>true</value>
+</property>
+<property>
+	<name>dfs.journalnode.edits.dir</name>
+	<value>/opt/hadoop/hdfs/journal</value>
+</property>
+<property>
+	<name>dfs.datanode.address</name>
+	<value>0.0.0.0:50010</value>
+</property>
+<property>
+	<name>dfs.datanode.http.address</name>
+	<value>0.0.0.0:50075</value>
+</property>
+<!-- property>
+	<name>dfs.hosts.exclude</name>
+	<value>/opt/hadoop/etc/hadoop/dfs.exclude</value>
+</property -->
+<property>
+	<name>dfs.namenode.name.dir</name>
+	<value>/opt/hadoop/hdfs/namenode</value>
+</property>
+<property>
+	<name>dfs.namenode.checkpoint.dir</name>
+	<value>/opt/hadoop/hdfs/checkpoint</value>
+</property>
+<property>
+	<name>dfs.datanode.data.dir</name>
+	<value>/opt/hadoop/hdfs/datanode</value>
+</property>
+<property>
+	<name>dfs.replication</name>
+	<value>1</value>
+</property>
+<property>
+	<name>dfs.blocksize</name>
+	<value>268435456</value> <!-- 256 MB -->
+</property>
+<property>
+	<name>dfs.heartbeat.interval</name>
+	<value>3</value>
+</property>
+<property>
+	<name>dfs.namenode.checkpoint.period</name>
+	<value>3600</value> <!-- Every hour -->
+</property>
+<property>
+	<name>dfs.permissions.enabled</name>
+	<value>true</value>
+</property>
+<property>
+	<name>dfs.namenode.edits.journal-plugin.hdfs</name>
+	<value>org.apache.hadoop.hdfs.qjournal.client.QuorumJournalManager</value>
+</property>
+<property>
+	<name>dfs.namenode.edits.dir</name>
+	<value>/opt/hadoop/hdfs/edits</value>
+</property>
+<property>
+	<name>dfs.datanode.ipc.address</name>
+	<value>0.0.0.0:8010</value>
+</property>
+<property>
+	<name>dfs.user.home.dir.prefix</name>
+	<value>/user</value>
+</property>
+<property>
+	<name>dfs.namenode.acls.enabled</name>
+	<value>true</value>
+</property>
 
-    <!-- NameService Configuration -->
-    <property>
-        <name>dfs.nameservices</name>
-        <value>hadoop-cluster</value>
-    </property>
-    
-    <!-- NameNode IDs -->
-    <property>
-        <name>dfs.ha.namenodes.hadoop-cluster</name>
-        <value>nn1,nn2,nn3</value>
-    </property>
-    
-    <!-- NameNode RPC addresses -->
-    <property>
-        <name>dfs.namenode.rpc-address.hadoop-cluster.nn1</name>
-        <value>mst01:9000</value>
-    </property>
-    <property>
-        <name>dfs.namenode.rpc-address.hadoop-cluster.nn2</name>
-        <value>mst02:9000</value>
-    </property>
-     <property>
-        <name>dfs.namenode.rpc-address.hadoop-cluster.nn3</name>
-        <value>mst03:9000</value>
-    </property>
-
-
-    <!-- NameNode HTTP addresses -->
-    <property>
-        <name>dfs.namenode.http-address.hadoop-cluster.nn1</name>
-        <value>mst01:9870</value>
-    </property>
-    <property>
-        <name>dfs.namenode.http-address.hadoop-cluster.nn2</name>
-        <value>mst02:9870</value>
-    </property>
-    <property>
-        <name>dfs.namenode.http-address.hadoop-cluster.nn3</name>
-        <value>mst03:9870</value>
-    </property>
-
-    <!-- Shared storage for NameNode metadata -->
-    <property>
-        <name>dfs.namenode.shared.edits.dir</name>
-        <value>qjournal://mst01:8485;mst02:8485;mst03:8485/hadoop-cluster</value>
-    </property>
-    
-    <!-- JournalNode data directory -->
-    <property>
-        <name>dfs.journalnode.edits.dir</name>
-        <value>/opt/hadoop/journal</value>
-    </property>
-    
-    <!-- Client failover -->
-    <property>
-        <name>dfs.client.failover.proxy.provider.hadoop-cluster</name>
-        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
-    </property>
-    
-    <!-- Fencing method -->
-    <property>
-        <name>dfs.ha.fencing.methods</name>
-        <value>sshfence</value>
-    </property>
-    <property>
-        <name>dfs.ha.fencing.ssh.private-key-files</name>
-        <value>/home/hadoop/.ssh/id_rsa</value>
-    </property>
-    
-    <!-- Auto-failover -->
-    <property>
-        <name>dfs.ha.automatic-failover.enabled</name>
-        <value>true</value>
-    </property>
-    
-    <!-- Replication factor -->
-    <property>
-        <name>dfs.replication</name>
-        <value>1</value>
-    </property>
-    
-    <!-- Block size -->
-    <property>
-        <name>dfs.blocksize</name>
-        <value>268435456</value>
-    </property>
-    
-    <!-- Data directories -->
-    <property>
-        <name>dfs.datanode.data.dir</name>
-        <value>/opt/hadoop/hdfs/datanode</value>
-    </property>
-    <property>
-        <name>dfs.namenode.name.dir</name>
-        <value>/opt/hadoop/hdfs/namenode</value>
-    </property>
-    
-    <!-- Secondary NameNode -->
-    <property>
-        <name>dfs.namenode.secondary.http-address</name>
-        <value>mst02:9868</value>
-    </property>
 ```
 
 ##### 3. MapReduce Configuration (mapred-site)
 
 ```xml
+<property>
+	<name>mapreduce.framework.name</name>
+	<value>yarn</value>
+</property>
+<property>
+	<name>mapreduce.jobtracker.address</name>
+	<value>localhost:8032</value>
+</property>
+<property>
+	 <name>mapreduce.jobhistory.done-dir</name>
+	 <value>/opt/hadoop/hdfs/jobhistory/done</value>
+</property>
+<!-- Shuffle Service Configuration -->
+<property>
+	<name>mapreduce.shuffle.port</name>
+	<value>13562</value>
+</property>
 
-    <property>
-        <name>mapreduce.framework.name</name>
-        <value>yarn</value>
-    </property>
-    
-    <!-- JobHistory Server -->
-   
-    <property>
-        <name>mapreduce.jobhistory.address</name>
-        <value>0.0.0.0:10020</value>
-    </property>
-    <property>
-        <name>mapreduce.jobhistory.webapp.address</name>
-        <value>0.0.0.0:19888</value>
-    </property>
-
-    <!-- Memory Configuration -->
-    <property>
-        <name>mapreduce.map.memory.mb</name>
-        <value>1024</value>
-    </property>
-    <property>
-        <name>mapreduce.reduce.memory.mb</name>
-        <value>1024</value>
-    </property>
-    
-    <!-- Java Heap Size -->
-    <property>
-        <name>mapreduce.map.java.opts</name>
-        <value>-Xmx768m</value>
-    </property>
-    <property>
-        <name>mapreduce.reduce.java.opts</name>
-        <value>-Xmx768m</value>
-    </property>
+<!-- Default Memory Configurations -->
+<property>
+	<name>mapreduce.map.memory.mb</name>
+	<value>1024</value> <!-- 1 GB -->
+</property>
+<property>
+	<name>mapreduce.reduce.memory.mb</name>
+	<value>1024</value> <!-- 1 GB -->
+</property>
+<property>
+	<name>mapreduce.map.java.opts</name>
+	<value>-Xmx1536m</value>
+</property>
+<property>
+	<name>mapreduce.reduce.java.opts</name>
+	<value>-Xmx3072m</value>
+</property>
+<property>
+	<name>mapreduce.jobhistory.intermediate-done-dir</name>
+	<value>/opt/hadoop/hdfs/jobhistory/intermediate-done</value>
+</property>
+<property>
+	<name>mapreduce.jobhistory.address</name>
+	<value>0.0.0.0:10020</value>
+</property>
+<property>
+	<name>mapreduce.jobhistory.webapp.address</name>
+	<value>0.0.0.0:19888</value>
+</property>
+<property>
+	<name>yarn.app.mapreduce.am.env</name>
+	<value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+</property>
+<property>
+	<name>mapreduce.map.env</name>
+	<value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+</property>
+<property>
+	<name>mapreduce.reduce.env</name>
+	<value>HADOOP_MAPRED_HOME=/opt/hadoop</value>
+</property>
 ```
 
 ##### 4. YARN Configuration (yarn-site.xml)
 
 ```xml
-
-    <!-- ResourceManager Configuration -->
-
-	<property>
-	  <name>yarn.resourcemanager.ha.enabled</name>
-	  <value>true</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.cluster-id</name>
-	  <value>yarn-cluster</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.ha.rm-ids</name>
-	  <value>rm1,rm2,rm3</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.hostname.rm1</name>
-	  <value>mst01</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.hostname.rm2</name>
-	  <value>mst02</value>
-	</property>
-	<property>
-	  <name>yarn.resourcemanager.hostname.rm3</name>
-	  <value>mst03</value>
-	</property>
-    
-    <!-- NodeManager Configuration -->
-    <property>
-        <name>yarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
-    </property>
-    <property>
-        <name>yarn.nodemanager.env-whitelist</name>
-        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
-    </property>
-    
-    <!-- Memory Configuration -->
-    <property>
-        <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>4096</value>
-    </property>
-    <property>
-        <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>4096</value>
-    </property>
-    <property>
-        <name>yarn.app.mapreduce.am.resource.mb</name>
-        <value>1024</value>
-    </property>
-    
-    <!-- CPU Configuration -->
-    <property>
-        <name>yarn.nodemanager.resource.cpu-vcores</name>
-        <value>2</value>
-    </property>
-    
-    <!-- Log Configuration -->
-    <property>
-        <name>yarn.log-aggregation-enable</name>
-        <value>true</value>
-    </property>
-    
-    <!-- Timeline Service -->
-    <property>
-        <name>yarn.timeline-service.enabled</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>yarn.timeline-service.hostname</name>
-        <value>0.0.0.0</value>
-    </property>
-    <property>
-        <name>yarn.timeline-service.webapp.address</name>
-        <value>0.0.0.0:8188</value>
-    </property>
-    <property>
-        <name>yarn.resourcemanager.system-metrics-publisher.enabled</name>
-        <value>true</value>
-    </property>
-    <!-- Zookeeper Service -->	
 <property>
-  <name>hadoop.zk.address</name>
-  <value>mst01:2181,mst02:2181,mst03:2181</value>
+	<name>yarn.resourcemanager.ha.enabled</name>
+	<value>true</value>
 </property>
+<property>
+	<name>yarn.resourcemanager.cluster-id</name>
+	<value>hadoop-cluster</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.ha.rm-ids</name>
+	<value>rm1,rm2,rm3</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.hostname.rm1</name>
+	<value>mst01</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.hostname.rm2</name>
+	<value>mst02</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.hostname.rm3</name>
+	<value>mst03</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.address.rm1</name>
+	<value>mst01:8032</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.address.rm2</name>
+	<value>mst02:8032</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.address.rm3</name>
+	<value>mst03:8032</value>
+</property>
+<property>
+	<name>yarn.nodemanager.aux-services</name>
+	<value>mapreduce_shuffle</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.webapp.address.rm1</name>
+	<value>mst01:8088</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.webapp.address.rm2</name>
+	<value>mst02:8088</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.webapp.address.rm3</name>
+	<value>mst03:8088</value>
+</property>
+<property>
+	<name>yarn.log-aggregation-enable</name>
+	<value>true</value>
+</property>
+<property>
+	<name>yarn.nodemanager.resource.memory-mb</name>
+	<value>6144</value>
+</property>
+<property>
+	<name>yarn.scheduler.minimum-allocation-mb</name>
+	<value>1024</value>
+</property>
+<property>
+	<name>yarn.scheduler.maximum-allocation-mb</name>
+	<value>6144</value>
+</property>
+<property>
+	<name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
+	<value>true</value>
+</property>
+<property>
+	<name>yarn.client.failover-proxy-provider</name>
+	<value>org.apache.hadoop.yarn.client.ConfiguredRMFailoverProxyProvider</value>
+</property>
+
+<!-- Zookeeper Service -->
+<property>
+	<name>yarn.resourcemanager.zk-address</name>
+	<value>mst01:2181,mst02:2181,mst03:2181</value>
+</property>
+
 ```
 
 ##### 5. Workers Configuration (workers)
@@ -568,7 +636,7 @@ mst03
 
 ##### 7.Hadoop Environment (hadoop-env.sh)
 
-```xml
+```bash
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
 export HADOOP_LOG_DIR=/opt/hadoop/logs
@@ -579,7 +647,10 @@ export HADOOP_LOG_DIR=/opt/hadoop/logs
 sudo mkdir -p /opt/hadoop/tmp
 sudo mkdir -p /opt/hadoop/hdfs/namenode
 sudo mkdir -p /opt/hadoop/hdfs/datanode
-sudo mkdir -p /opt/hadoop/journal
+sudo mkdir -p /opt/hadoop/hdfs/checkpoint
+sudo mkdir -p /opt/hadoop/hdfs/edits
+sudo mkdir -p /opt/hadoop/hdfs/jobhistory
+sudo mkdir -p /opt/hadoop/hdfs/journal
 sudo mkdir -p /opt/hadoop/logs
 sudo chown -R hadoop:hadoop /opt/hadoop/
 ```
