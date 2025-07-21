@@ -757,9 +757,7 @@ yarn application -list
 ###### 3. Web Interfaces
 - NameNode (Active): http://mst01:9870
 - NameNode (Standby): http://mst03:9870
-- Secondary NameNode: http://mst02:9868
 - ResourceManager: http://mst01:8088
-- JobHistory Server: http://mst02:19888
 
 ###### 4. Test HDFS Operations
 ```bash
