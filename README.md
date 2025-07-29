@@ -690,8 +690,8 @@ done
 On mst01
 
 ```bash
+hdfs namenode -initializeSharedEdits
 hdfs zkfc -formatZK
-hadoop-daemon.sh start journalnode
 hadoop-daemon.sh start journalnode
 ```
 
