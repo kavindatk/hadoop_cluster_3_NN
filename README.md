@@ -777,3 +777,80 @@ yarn jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.4.0.jar
 <picture>
   <img alt="docker" src="https://github.com/kavindatk/hadoop_cluster_3_NN/blob/main/images/verify_hadoop.JPG" width="800" height="400">
 </picture>
+
+
+
+## Step 7 : Enable Hadoop HTTPFS for Hue Integration
+
+Now that we have successfully configured the <b>3-NameNode Hadoop cluster</b>, the next step is to <b>enable Hadoop HTTPFS (HTTP File System) mode</b>.
+
+This feature will be useful in future steps, especially for integrating with Hue, which uses HTTPFS to browse and manage HDFS files through the web interface.
+
+The following steps show how to <b>configure and enable HTTPFS</b> on the cluster.
+
+```bash
+cd /opt/hadoop/etc/hadoop/
+nano httpfs-env.sh
+```
+
+Then add or modify
+
+```xml
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+```
+
+```bash
+nano httpfs-site.xml
+```
+
+Then add or modify
+
+```xml
+	<property>
+		  <name>httpfs.proxyuser.hue.hosts</name>
+		  <value>*</value>
+	</property>
+	<property>
+		  <name>httpfs.proxyuser.hue.groups</name>
+		  <value>*</value>
+	</property>
+```
+
+
+```bash
+nano core-site.xml
+```
+
+Then add or modify
+
+```xml
+	<property>
+		  <name>hadoop.proxyuser.httpfs.groups</name>
+		  <value>*</value>
+	</property>
+	<property>
+		  <name>hadoop.proxyuser.httpfs.hosts</name>
+		  <value>*</value>
+	</property> 
+```
+
+##### Start and Verify the httpfs service
+
+```bash
+hdfs --daemon start httpfs
+
+# Verify the service
+
+jps
+ss -tulpn | grep 14000
+curl -sS 'http://localhost:14000/webhdfs/v1?op=gethomedirectory&user.name=hdfs'
+curl -sS 'http://hadoop-cluster:14000/webhdfs/v1?op=gethomedirectory&user.name=hdfs'
+curl -i -X GET 'http://localhost:14000/webhdfs/v1?op=gethomedirectory&user.name=hdfs'
+curl -i -X GET 'http://hadoop-cluster:14000/webhdfs/v1?op=gethomedirectory&user.name=hdfs'
+```
+
+<br/>
+
+<picture>
+  <img alt="docker" src="https://github.com/kavindatk/hadoop_cluster_3_NN/blob/main/images/httpfs_service.JPG" width="800" height="400">
+</picture>
