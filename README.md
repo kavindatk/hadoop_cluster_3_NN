@@ -690,7 +690,7 @@ done
 On mst01
 
 ```bash
-hdfs namenode -initializeSharedEdits
+#hdfs namenode -initializeSharedEdits
 hdfs zkfc -formatZK
 hadoop-daemon.sh start journalnode
 ```
@@ -755,11 +755,11 @@ yarn application -list
 ```
 
 ###### 3. Web Interfaces
-- NameNode (Active): http://<master node>:9870
-- NameNode (Standby): http://<master node>:9870
-- ResourceManager: http://<master node>:8088
-- Node Manager UI: http://<slave node>:8042
-- DataNode UI: http://<slave node>:50075
+- NameNode (Active): http://< master node >:9870
+- NameNode (Standby): http://< master node >:9870
+- Resourc eManager: http://< master node >:8088
+- Node Manager UI: http://< slave node >:8042
+- DataNode UI: http://< slave node >:50075
 
 ###### 4. Test HDFS Operations
 ```bash
